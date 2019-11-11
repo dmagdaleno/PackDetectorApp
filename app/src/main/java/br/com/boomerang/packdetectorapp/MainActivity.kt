@@ -13,6 +13,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -80,5 +81,16 @@ class MainActivity : AppCompatActivity() {
             .any { it.name() == "cup" }
 
         Log.d(TAG, "Contém xícara: $contemXicara")
+
+        apagaArquivo()
+    }
+
+    private fun apagaArquivo() {
+        try {
+            File(localFoto).delete()
+            localFoto = ""
+        } catch (e: Exception) {
+            Log.e(TAG, "Erro ao apagar arquivo", e)
+        }
     }
 }
