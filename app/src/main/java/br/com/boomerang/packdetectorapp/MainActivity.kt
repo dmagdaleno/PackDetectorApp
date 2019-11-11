@@ -6,7 +6,11 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import clarifai2.api.ClarifaiBuilder
+import clarifai2.dto.input.ClarifaiInput
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 
@@ -17,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         private const val REQ_TIRA_FOTO = 1
     }
 
-    private lateinit var localFoto: String
+    private var localFoto: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,5 +58,27 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        if(localFoto.isNotBlank()) {
+            GlobalScope.launch {
+                enviaFoto(File(localFoto))
+            }
+        }
+    }
+
+    private fun enviaFoto(foto: File) {
+        val resultados = ClarifaiBuilder("fa402aa874a74644843c29f5ac353a7f")
+            .buildSync()
+            .defaultModels
+            .generalModel()
+            .predict()
+            .withInputs(ClarifaiInput.forImage(foto))
+            .executeSync()
+            .get()
+
+        val contemXicara = resultados
+            .flatMap { it.data() }
+            .any { it.name() == "cup" }
+
+        Log.d(TAG, "Contém xícara: $contemXicara")
     }
 }
