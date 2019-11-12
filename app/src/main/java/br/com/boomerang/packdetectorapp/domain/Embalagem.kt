@@ -1,4 +1,4 @@
-package br.com.boomerang.packbackapp.domain
+package br.com.boomerang.packdetectorapp.domain
 
 import br.com.boomerang.packbackapp.util.formata
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
