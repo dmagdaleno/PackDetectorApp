@@ -3,4 +3,7 @@
     <string name="capturar_produto">Capturar Produto</string>
     <string name="txt_info">Tire a foto de um produto</string>
     <string name="foto_embalagem">Foto de embalagem</string>
+    <string name="erro_foto">Não foi possível analisar a foto</string>
+    <string name="enviando_foto">Enviando foto para análise…</string>
+    <string name="foto_analisada">Selecionando produtos…</string>
 </resources>

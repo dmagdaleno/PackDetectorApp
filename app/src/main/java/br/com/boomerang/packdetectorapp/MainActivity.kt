@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
         catch (e: IOException) {
             Log.e(TAG, "Erro ao salvar foto", e)
+            atualizaMensagem(getString(R.string.erro_foto))
             return
         }
 
@@ -69,8 +70,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enviaFoto(foto: File) {
+        atualizaMensagem(getString(R.string.enviando_foto))
         try {
             val resultados = buscaResultados(foto)
+
+            atualizaMensagem(getString(R.string.foto_analisada))
 
             val tags = resultados
                 .flatMap { it.data() }
@@ -86,11 +90,16 @@ class MainActivity : AppCompatActivity() {
         }
         catch (e: Exception) {
             Log.e(TAG, "Erro ao tentar enviar foto", e)
+            atualizaMensagem(getString(R.string.erro_foto))
         }
         finally {
             apagaArquivo()
         }
 
+    }
+
+    private fun atualizaMensagem(mensagem: String) {
+        runOnUiThread { txt_info.text = mensagem }
     }
 
     private fun buscaResultados(foto: File): List<ClarifaiOutput<Concept>> {
