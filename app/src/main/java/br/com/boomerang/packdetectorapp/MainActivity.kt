@@ -6,6 +6,7 @@ import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import br.com.boomerang.packdetectorapp.domain.Identificador
 import clarifai2.api.ClarifaiBuilder
 import clarifai2.dto.input.ClarifaiInput
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
+        private const val AUTHORITY = "br.com.boomerang.packdetectorapp.fileprovider"
+        private const val CLARIFAI_API_KEY = "fa402aa874a74644843c29f5ac353a7f"
         private const val REQ_TIRA_FOTO = 1
     }
 
@@ -48,8 +51,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val authority = "br.com.boomerang.packdetectorapp.fileprovider"
-        val uri = FileProvider.getUriForFile(this, authority, foto)
+        val uri = FileProvider.getUriForFile(this, AUTHORITY, foto)
 
         intentFoto.putExtra(MediaStore.EXTRA_OUTPUT, uri)
 
@@ -67,22 +69,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enviaFoto(foto: File) {
-        val resultados = ClarifaiBuilder("fa402aa874a74644843c29f5ac353a7f")
-            .buildSync()
-            .defaultModels
-            .generalModel()
-            .predict()
-            .withInputs(ClarifaiInput.forImage(foto))
-            .executeSync()
-            .get()
+        try {
+            val resultados = ClarifaiBuilder(CLARIFAI_API_KEY)
+                .buildSync()
+                .defaultModels
+                .generalModel()
+                .predict()
+                .withInputs(ClarifaiInput.forImage(foto))
+                .executeSync()
+                .get()
 
-        val contemXicara = resultados
-            .flatMap { it.data() }
-            .any { it.name() == "cup" }
+            val tags = resultados
+                .flatMap { it.data() }
+                .mapNotNull { it.name() }
 
-        Log.d(TAG, "Contém xícara: $contemXicara")
+            Identificador(tags = tags)
 
-        apagaArquivo()
+        }
+        catch (e: Exception) {
+            Log.e(TAG, "Erro ao tentar enviar foto", e)
+        }
+        finally {
+            apagaArquivo()
+        }
+
     }
 
     private fun apagaArquivo() {
