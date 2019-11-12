@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import br.com.boomerang.packdetectorapp.domain.Identificador
+import br.com.boomerang.packdetectorapp.util.Keys
 import clarifai2.api.ClarifaiBuilder
 import clarifai2.dto.input.ClarifaiInput
 import clarifai2.dto.model.output.ClarifaiOutput
@@ -22,9 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val AUTHORITY = "br.com.boomerang.packdetectorapp.fileprovider"
-        private const val CLARIFAI_API_KEY = "fa402aa874a74644843c29f5ac353a7f"
-        private const val REQ_TIRA_FOTO = 1
+        private const val defaultTitle = "Produtos"
     }
 
     private var localFoto: String = ""
@@ -32,10 +31,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        title = defaultTitle
 
-        btn_tira_foto.setOnClickListener {
-            captura()
-        }
+        btn_tira_foto.setOnClickListener { captura() }
     }
 
     private fun captura() {
@@ -53,11 +51,11 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val uri = FileProvider.getUriForFile(this, AUTHORITY, foto)
+        val uri = FileProvider.getUriForFile(this, Keys.AUTHORITY, foto)
 
         intentFoto.putExtra(MediaStore.EXTRA_OUTPUT, uri)
 
-        startActivityForResult(intentFoto, REQ_TIRA_FOTO)
+        startActivityForResult(intentFoto, Keys.REQ_TIRA_FOTO)
     }
 
     override fun onResume() {
@@ -80,6 +78,10 @@ class MainActivity : AppCompatActivity() {
 
             val identificador = Identificador(tags = tags)
 
+            val intent = Intent(this, ListaProdutoActivity::class.java)
+                .apply { putExtra(Keys.IDENTIFICADOR, identificador) }
+
+            startActivity(intent)
 
         }
         catch (e: Exception) {
@@ -92,7 +94,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun buscaResultados(foto: File): List<ClarifaiOutput<Concept>> {
-        return ClarifaiBuilder(CLARIFAI_API_KEY)
+        return ClarifaiBuilder(Keys.CLARIFAI_API_KEY)
             .buildSync()
             .defaultModels
             .generalModel()

@@ -2,4 +2,5 @@
     <string name="app_name">PackDetectorApp</string>
     <string name="capturar_produto">Capturar Produto</string>
     <string name="txt_info">Tire a foto de um produto</string>
+    <string name="foto_embalagem">Foto de embalagem</string>
 </resources>
