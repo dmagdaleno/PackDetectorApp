@@ -36,7 +36,7 @@ class ListaProdutoActivity : AppCompatActivity() {
 
         val service = PackbackService().cria(ProdutoService::class.java) ?: return
 
-        service.getProdutosPorRegiao(1).enqueue( object : Callback<List<Produto>> {
+        service.buscaProdutos(identificador).enqueue( object : Callback<List<Produto>> {
 
             override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
                 Log.e(TAG, "Erro ao buscar produtos", t)
