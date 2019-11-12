@@ -9,5 +9,5 @@ import retrofit2.http.POST
 interface ProdutoService {
 
     @POST("produtos/identifica")
-    fun getProdutosPorDescricao(@Body identificador: Identificador): Call<List<Produto>>
+    fun getProdutos(@Body identificador: Identificador): Call<List<Produto>>
 }

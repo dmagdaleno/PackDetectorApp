@@ -9,6 +9,8 @@ import androidx.core.content.FileProvider
 import br.com.boomerang.packdetectorapp.domain.Identificador
 import clarifai2.api.ClarifaiBuilder
 import clarifai2.dto.input.ClarifaiInput
+import clarifai2.dto.model.output.ClarifaiOutput
+import clarifai2.dto.prediction.Concept
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -70,20 +72,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun enviaFoto(foto: File) {
         try {
-            val resultados = ClarifaiBuilder(CLARIFAI_API_KEY)
-                .buildSync()
-                .defaultModels
-                .generalModel()
-                .predict()
-                .withInputs(ClarifaiInput.forImage(foto))
-                .executeSync()
-                .get()
+            val resultados = buscaResultados(foto)
 
             val tags = resultados
                 .flatMap { it.data() }
                 .mapNotNull { it.name() }
 
-            Identificador(tags = tags)
+            val identificador = Identificador(tags = tags)
+
 
         }
         catch (e: Exception) {
@@ -93,6 +89,17 @@ class MainActivity : AppCompatActivity() {
             apagaArquivo()
         }
 
+    }
+
+    private fun buscaResultados(foto: File): List<ClarifaiOutput<Concept>> {
+        return ClarifaiBuilder(CLARIFAI_API_KEY)
+            .buildSync()
+            .defaultModels
+            .generalModel()
+            .predict()
+            .withInputs(ClarifaiInput.forImage(foto))
+            .executeSync()
+            .get()
     }
 
     private fun apagaArquivo() {

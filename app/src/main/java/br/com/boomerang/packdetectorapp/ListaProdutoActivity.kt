@@ -28,8 +28,7 @@ class ListaProdutoActivity : AppCompatActivity() {
 
     private fun buscaProdutos(identificador: Identificador) {
         PackbackService().cria(ProdutoService::class.java)?.let { service ->
-            service.getProdutosPorDescricao(identificador).enqueue(
-                object : Callback<List<Produto>> {
+            service.getProdutos(identificador).enqueue( object : Callback<List<Produto>> {
 
                 override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
                     Log.e(TAG, "Erro ao buscar produtos", t)
@@ -41,8 +40,9 @@ class ListaProdutoActivity : AppCompatActivity() {
                 ) {
                     response.body()?.let { produtos ->
                         Log.d(TAG, "Produtos encontrados $produtos")
-                        this@ListaProdutoActivity.title = parseTitle(produtos)
-                        lista_produto.adapter = ProdutoAdapter(this@ListaProdutoActivity, produtos)
+                        val listaProdutoActivity = this@ListaProdutoActivity
+                        listaProdutoActivity.title = parseTitle(produtos)
+                        lista_produto.adapter = ProdutoAdapter(listaProdutoActivity, produtos)
                     }
                 }
 
